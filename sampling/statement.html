@@ -1,0 +1,151 @@
+{% block title %}
+Plase read the statement and answer the questions. 
+{% endblock %}
+
+
+{% block styles %}
+<!-- Compiled and minified CSS -->
+<link href="{{ static 'global/empty.css'}}" rel="stylesheet">
+
+{% endblock %}
+
+{% block content %}
+<body>
+
+    <h4> Current Round</h4>
+    <p style="text-align: left; font-size: 0.9rem;">
+        Statement number {{round_number}} out of {{C.NUM_ROUNDS}}
+    </p>
+
+<div id="show_statement"> </div>
+
+
+<div class="rate_statement">
+    <div class="slidecontainer">
+        <p> How likely is this statement true?</p>
+        <table style="width:100%">
+            <tr>
+                <td class="rangelabel" style="width:20%"> very unlikely  </td>
+                <td style="width:60%">
+                    <input style="width:100%" type="range" min="-100" max="100" value="0" step="1" class="slider"
+                        id="range_likelyTrue" name="range_likelyTrue" >
+                </td>
+                <td class="rangelabel" style="width:20%"> very likely   </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="slidecontainer">
+        <p> How much do you agree with this statement?</p>
+        <table style="width:100%">
+            <tr>
+                <td  class="rangelabel"  style="width:20%"> not at all  </td>
+                <td style="width:60%">
+                    <input style="width:100%" type="range" min="-100" max="100" value="0" step="1" class="slider"
+                        id="range_agree" name="range_agree" >
+                </td>
+                <td class="rangelabel" style="width:20%"> very much  </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="slidecontainer">
+        <p> How concerned are you about climate change?</p>
+        <table style="width:100%">
+            <tr>
+                <td class="rangelabel" style="width:20%"> not at all  </td>
+                <td style="width:60%">
+                    <input style="width:100%" type="range" min="-100" max="100" value="0" step="1" class="slider"
+                        id="range_ccconcern" name="range_ccconcern" >
+                </td>
+                <td class="rangelabel" style="width:20%"> very much  </td>
+            </tr>
+        </table>
+    </div>
+
+
+
+</div>
+
+<button class="otree-btn-next btn btn-primary">Next</button>
+
+
+<input type="hidden" name="statementText" id="statementText" />
+<input type="hidden" name="statementID" id="statementID" />
+</body>
+
+{% endblock %}
+
+{{ formfield_errors 'range_agree' }}
+{{ formfield_errors 'range_likelyTrue' }}
+{{ formfield_errors 'range_ccconcern' }}
+{{ formfield_errors 'statementText' }}
+{{ formfield_errors 'statementID' }}
+
+
+{% block scripts %}
+<!-- Compiled and minified JavaScript -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script src="{{static 'global/js/stimuli/drawStatement.js'}}"></script>
+<script> 
+
+var statement
+
+var round_number = "{{round_number}}"
+var boxChoice = "{{boxChoice}}"
+var randomInfoNumber= "{{randomInfo}}"
+var randomMisinfoNumber = "{{randomMisinfo}}"
+
+
+$(document).ready(function () {
+    console.log("thisExists")
+    if (boxChoice == "i"){
+        statement.initInfo()
+    }
+    if (boxChoice == "m"){
+        statement.initMisinfo()
+    }
+})
+
+
+
+statement = {
+
+    initInfo(){
+        $.getJSON("{{static 'global/js/stimuli/ClimateInfo.json'}}", function (json) {
+            statement.texts = json["CCInfo"];
+            statement.showRoundText(infoType= "i")
+        });
+        // setTimeout(function () { statement.showRoundText(infoType= "i") },  1000);
+    },
+
+    initMisinfo(){
+        $.getJSON("{{static 'global/js/stimuli/ClimateMisinfo.json'}}", function (json) {
+            statement.texts = json["CCMisinfo"];
+            statement.showRoundText(infoType="m")
+        });
+        
+    },
+
+    showRoundText(infoType){
+        console.log("here")
+        if (infoType == "i") {
+            roundText = statement.texts[randomInfoNumber].finalStatement
+            roundTextID = statement.texts[randomInfoNumber].tweetid
+            
+        }
+        if (infoType == "m") {
+            roundText = statement.texts[randomMisinfoNumber].finalStatement
+            roundTextID = statement.texts[randomMisinfoNumber].tweetid
+        }
+        $('#show_statement').html(roundText)
+        forminputs.statementText.value = roundText
+        forminputs.statementID.value = roundTextID
+    }
+
+}
+
+</script>
+
+{% endblock %}

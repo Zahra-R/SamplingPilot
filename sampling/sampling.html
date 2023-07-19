@@ -1,0 +1,61 @@
+{% block title %}
+Please choose a box
+{% endblock %}
+
+
+{% block styles %}
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <link href="{{ static 'global/empty.css'}}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<body>
+
+    <h4> From which box do you want to read the next statement? </h4>
+<div id="choice">
+    <table style=" width:100%" class="table" id="choicetable">
+        <tbody>
+          
+                
+
+            <tr style="border-color: white;">
+                <th> </th>
+                <td style="text-align: left;"><button name="boxChoice" id="abtn" value="i"
+                    class="btn btn-primary btn-large choiceButton" disabled> Box A </button></td>
+                <td style="text-align: left;"><button name="boxChoice" id="bbtn" value="m"
+                    class="btn btn-primary btn-large choiceButton" disabled> Box B </button></td>
+            </tr>
+        </tbody>
+    </table> </div>
+
+
+
+
+</body>
+
+{{ formfield_errors "boxChoice" }}
+
+{% endblock %}
+
+
+{% block scripts %}
+
+  <!-- Compiled and minified JavaScript -->  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script src="{{static 'global/js/stimuli/drawStatement.js'}}"></script>
+
+<script> 
+
+    enablebtn = function () {
+        document.getElementById("bbtn").disabled = false;
+        document.getElementById("abtn").disabled = false;
+    }
+
+    window.onload = function () {
+        setTimeout(function () { enablebtn() }, 100);
+    }
+</script>
+
+{% endblock %}
