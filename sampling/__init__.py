@@ -32,10 +32,13 @@ class Player(BasePlayer):
 
 
 def creating_session(subsession:Subsession):
+    import itertools
+    reverse_display = itertools.cycle([True, False])
     for player in subsession.get_players():
         if subsession.round_number == 1: 
             player.participant.randomInfoArray = random.sample(range(1,147),C.NUM_ROUNDS)
             player.participant.randomMisinfoArray = random.sample(range(1,79),C.NUM_ROUNDS)
+            player.participant.reverseBoxes = next(reverse_display)
 
 
 # ---------------------------------------------------------------
@@ -45,33 +48,22 @@ def creating_session(subsession:Subsession):
 
 class sampling(Page):
     form_model = 'player'
-    form_fields = ['boxChoice']
+    form_fields = ['boxChoice','statementText', 'statementID','range_ccconcern', 'range_agree', 'range_likelyTrue']
     @staticmethod
-    def vars_for_template(player: Player):
-        round_number = player.round_number
-        return {
-            'round_number': round_number
-            }
-    @staticmethod
-    def before_next_page(player: Player, timeout_happened):
-        print('maybe I should draw the text here')
-
-
-class statement(Page):
-    form_model = 'player'
-    #form_fields = ['statementText', 'statementID', ]
-    form_fields = ['range_ccconcern', 'range_agree', 'range_likelyTrue','statementText', 'statementID']
     def vars_for_template(player: Player):
         round_number = player.round_number
         return {
             'round_number': round_number,
             'randomInfo': player.participant.randomInfoArray[round_number-1],
             'randomMisinfo': player.participant.randomMisinfoArray[round_number-1],
-            'boxChoice' : player.boxChoice
+            'reverseBoxes': player.participant.reverseBoxes
             }
-    
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        print('maybe I should draw the text here')
+
+
 page_sequence = [
     #betweenGames,
-    sampling,
-    statement
+    sampling
 ]
