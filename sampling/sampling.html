@@ -78,7 +78,7 @@
 </div>
 
 
-    <button class="btn" style="float:right;" type="button" id="nextst" onclick="nextRound()" disabled>Next</button>
+    <button class="btn" style="float:right;" type="button" id="nextst" onclick="nextRound(triggernext)" disabled>Next</button>
 
     <input type="hidden" name="boxChoice" id="boxChoice" />
     <button type="hidden" style="display:none;"  name="mynextbtn" id="mynextbtn"> </button>
@@ -118,6 +118,27 @@ enablebtn = function () {
 }
 
 
+triggernext = function() {
+    $("#mynextbtn").trigger("click")
+}
+
+    
+function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
 $(document).ready(function () {
     if (reverse == "True") {
         $('#abtn')[0].value = "m"
@@ -129,11 +150,12 @@ $(document).ready(function () {
 
 statement = {
 
-    initInfo() { 
+    initInfo(callback) { 
         console.log("initinfo start")
         $.getJSON("{{static 'global/js/stimuli/ClimateInfo.json'}}", function (json) {
             statement.itexts = json["CCInfo"];
         });
+        callback();
     },
 
     initMisinfo(){
@@ -146,6 +168,10 @@ statement = {
     },
 
     showRoundText(boxname, infoType){
+         //if($('#abtn').html().length < 40 && $('#abtn').html().length < 40 ){
+            document.cookie = "boxname=" + boxname  // + ";path=/" + round_number;
+            document.cookie = "infoType=" + infoType //+ ";path=/" + round_number;
+            console.log("here in showroundtext printing cookies" , document.cookie) 
             if (infoType == "i") {
                 roundText = statement.itexts[randomInfoNumber].finalStatement
                 roundTextID = statement.itexts[randomInfoNumber].tweetid
@@ -173,44 +199,43 @@ statement = {
     }
 }
 
-// function checkForChoice() {
-//     console.log("checkingcookies checkfchoice")
+function checkForChoice() {
+    console.log("checkingcookies checkfchoice")
 
-//     if (getCookie("boxname")!='') {
-//             console.log("at least that workds")
-//             console.log(getCookie("boxname"))
-//             //statement.showRoundText(boxname = getCookie('boxname'), infoType = getCookie('infoType'))
-//             if (statement.itexts !=undefined && statement.mtexts !=undefined ){
-//                 statement.showRoundText(boxname = getCookie('boxname'), infoType = getCookie('infoType'))
-//             }
-//             else {
-//                 console.log("have to go again")
-//                 setTimeout(function () { checkForChoice();}, 3);
-//             }
+    if (getCookie("boxname")!='') {
+            console.log("at least that workds")
+            console.log(getCookie("boxname"))
+            //statement.showRoundText(boxname = getCookie('boxname'), infoType = getCookie('infoType'))
+            if (statement.itexts !=undefined && statement.mtexts !=undefined ){
+                statement.showRoundText(boxname = getCookie('boxname'), infoType = getCookie('infoType'))
+            }
+            else {
+                console.log("have to go again")
+                setTimeout(function () { checkForChoice();}, 3);
+            }
             
-//         } 
-//     else {
-//         setTimeout(function () { enablebtn() }, 100);
-//     }
-// }
-
-
-function nextRound() {
-    for (let i = 1; i < 100; i++) {
-        console.log(i)
+        } 
+    else {
+        setTimeout(function () { enablebtn() }, 100);
     }
+}
+
+
+function nextRound(callback) {
+    document.cookie = 'infoType=; expires=Thu, 01 Jan 1970 00:00:00 UTC'
+    document.cookie = 'boxname=; expires=Thu, 01 Jan 1970 00:00:00 UTC'
+    callback()
 }
 
 
 
 window.onload = function () {
-        statement.initInfo() // checkForChoice)
+        statement.initInfo(checkForChoice) // checkForChoice)
         statement.initMisinfo()
-        setTimeout(function () { enablebtn() }, 100);
+        //setTimeout(function () { enablebtn() }, 100);
         // check if user has been on this page before (e.g. the page is reloaded)
         // if so, then display the message from the box the user has previously selected with the help of cookies
-        
-        
+      
         
 }
 
