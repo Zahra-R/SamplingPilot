@@ -102,12 +102,25 @@ class End(Page):
     form_fields = [   "faithful", "use_data", "generalFeedback"]
 
 
+class Conclude(Page):
+    form_model = 'player'
+    @staticmethod
+    def vars_for_template(player: Player):
+        return {
+             'seenM': player.participant.seenMisinfo
+        }
+        
+
+
+
+
 
 
 
 page_sequence = [
-    Demographics,
-    CCConcern,
-    Pol_Att,
-    End
+   # Demographics,
+   # CCConcern,
+   # Pol_Att,
+    End,
+    Conclude
 ]

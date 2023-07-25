@@ -12,7 +12,7 @@ Sampling Paradigma
 class C(BaseConstants):
     NAME_IN_URL = 'SAMPLING'
     PLAYERS_PER_GROUP = None
-    NUM_ROUNDS = 10
+    NUM_ROUNDS = 4
 
 
 class Subsession(BaseSubsession):
@@ -43,6 +43,7 @@ def creating_session(subsession:Subsession):
             player.participant.randomInfoArray = random.sample(range(1,147),C.NUM_ROUNDS)
             player.participant.randomMisinfoArray = random.sample(range(1,79),C.NUM_ROUNDS)
             player.participant.reverseBoxes = next(reverse_display)
+            player.participant.seenMisinfo = []
 
 
 
@@ -87,6 +88,8 @@ class sampling(Page):
             }
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
+        if(player.boxChoice == "m"):
+            player.participant.seenMisinfo.append(player.participant.randomMisinfoArray[player.round_number-1])
         print('maybe I should draw the text here')
 
 

@@ -20,7 +20,8 @@ SESSION_CONFIG_DEFAULTS = dict(
 PARTICIPANT_FIELDS = [
     'randomInfoArray',
     'randomMisinfoArray', 
-    'reverseBoxes'
+    'reverseBoxes',
+    'seenMisinfo'
 ]
 SESSION_FIELDS = []
 
