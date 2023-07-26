@@ -1,6 +1,7 @@
 from random import random, seed, choice as random_choice, randint
 from otree.api import *
 import numpy as np
+import json
 # import scipy.stats as stats
 
 
@@ -109,6 +110,35 @@ class Conclude(Page):
         return {
              'seenM': player.participant.seenMisinfo
         }
+    
+
+class Conclude2(Page):
+    form_model = 'player'
+    @staticmethod
+    def vars_for_template(player: Player):
+        import string
+        seenM = player.participant.seenMisinfo
+        misinfofile = open('sampling/ClimateMisinfo.json')
+        #infofile = open('sampling/ClimateInfo.json')
+        misinfo = json.load(misinfofile)['CCMisinfo']
+        #info = json.load(infofile)['CCInfo']
+        seenMstatements = []
+        seenMcorrections = []
+        for x in seenM:
+            #string.replace(old, new, count)
+            statementstring = misinfo[x]['finalStatement']
+            statementstring =statementstring.replace("'", "")
+            print("##############################################")
+            print(statementstring)
+            seenMstatements.append(statementstring)
+            seenMcorrections.append(misinfo[x]['correctedStatement'])
+        return {
+            'seenM': seenM,
+            'seenMstatements': seenMstatements,
+            'seenMcorrections': seenMcorrections
+        }
+
+    
         
 
 
@@ -122,5 +152,5 @@ page_sequence = [
    # CCConcern,
    # Pol_Att,
     End,
-    Conclude
+    Conclude2
 ]

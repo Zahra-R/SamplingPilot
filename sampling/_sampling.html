@@ -105,6 +105,10 @@
 
 <script> 
 var statement
+
+var round_number = "{{round_number}}"
+var randomInfoNumber= "{{randomInfo}}"
+var randomMisinfoNumber = "{{randomMisinfo}}"
 var reverse = "{{reverseBoxes}}"
 
 enablebtn = function () {
@@ -145,6 +149,22 @@ $(document).ready(function () {
 
 statement = {
 
+    initInfo(callback) { 
+        console.log("initinfo start")
+        $.getJSON("{{static 'global/js/stimuli/ClimateInfo.json'}}", function (json) {
+            statement.itexts = json["CCInfo"];
+        });
+        callback();
+    },
+
+    initMisinfo(){
+        console.log("initmisinfo start")
+        $.getJSON("{{static 'global/js/stimuli/ClimateMisinfo.json'}}", function (json) {
+            statement.mtexts = json["CCMisinfo"];
+        });
+        console.log("initmisinfo end");
+        
+    },
 
     showRoundText(boxname, infoType){
          //if($('#abtn').html().length < 40 && $('#abtn').html().length < 40 ){
@@ -152,14 +172,14 @@ statement = {
             document.cookie = "infoType=" + infoType //+ ";path=/" + round_number;
             console.log("here in showroundtext printing cookies" , document.cookie) 
             if (infoType == "i") {
-                roundText = String("{{InfoText}}")
-                roundTextID = "{{randomInfo}}"
+                roundText = statement.itexts[randomInfoNumber].finalStatement
+                roundTextID = statement.itexts[randomInfoNumber].tweetid
                 forminputs.boxChoice.value = "i"
                 
             }
             if (infoType == "m") {
-                roundText = String("{{MisinfoText}}")
-                roundTextID = "{{randomMisinfo}}"
+                roundText = statement.mtexts[randomMisinfoNumber].finalStatement
+                roundTextID = statement.mtexts[randomMisinfoNumber].tweetid
                 forminputs.boxChoice.value = "m"
             }
             //$('#show_statement').html(roundText)
@@ -186,7 +206,14 @@ function checkForChoice() {
     if (getCookie("boxname")!='') {
             console.log("at least that workds")
             console.log(getCookie("boxname"))
-            statement.showRoundText(boxname = getCookie('boxname'), infoType = getCookie('infoType'))
+            //statement.showRoundText(boxname = getCookie('boxname'), infoType = getCookie('infoType'))
+            if (statement.itexts !=undefined && statement.mtexts !=undefined ){
+                statement.showRoundText(boxname = getCookie('boxname'), infoType = getCookie('infoType'))
+            }
+            else {
+                console.log("have to go again")
+                setTimeout(function () { checkForChoice();}, 3);
+            }
             
         } 
     else {
@@ -204,7 +231,8 @@ function nextRound(callback) {
 
 
 window.onload = function () {
-        checkForChoice()
+        statement.initInfo(checkForChoice) // checkForChoice)
+        statement.initMisinfo()
         //setTimeout(function () { enablebtn() }, 100);
         // check if user has been on this page before (e.g. the page is reloaded)
         // if so, then display the message from the box the user has previously selected with the help of cookies

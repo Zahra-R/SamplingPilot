@@ -2,6 +2,7 @@ import random
 
 from otree.api import *
 import numpy as np
+import json
 
 
 author = 'Zahra Rahmani'
@@ -73,24 +74,53 @@ def allocateBoxNames(player: Player):
 # ------------------- PAGES--------------------------------------
 #----------------------------------------------------------------
 
-
 class sampling(Page):
     form_model = 'player'
-    form_fields = ['boxChoice','statementText', 'statementID','range_ccconcern', 'range_agree', 'range_likelyTrue']
+    form_fields = ['boxChoice','statementText', 'statementID', 'range_ccconcern', 'range_agree', 'range_likelyTrue']
     @staticmethod
     def vars_for_template(player: Player):
         round_number = player.round_number
+        misinfofile = open('sampling/ClimateMisinfo.json')
+        infofile = open('sampling/ClimateInfo.json')
+        misinfo = json.load(misinfofile)['CCMisinfo']
+        info = json.load(infofile)['CCInfo']
+        MisinfoText = misinfo[player.participant.randomMisinfoArray[round_number-1]]['finalStatement']
+        InfoText = info[player.participant.randomInfoArray[round_number-1]]['finalStatement']
+        # these are tweetids, we are not submitting them. We only submit the index of the statement in the json file (internal statementID)
+        #MisinfoID = misinfo[player.participant.randomMisinfoArray[round_number-1]]['tweetid']
+        #InfoID = info[player.participant.randomInfoArray[round_number-1]]['tweetid']
         return {
             'round_number': round_number,
             'randomInfo': player.participant.randomInfoArray[round_number-1],
             'randomMisinfo': player.participant.randomMisinfoArray[round_number-1],
-            'reverseBoxes': player.participant.reverseBoxes
-            }
+            'reverseBoxes': player.participant.reverseBoxes,
+            'MisinfoText': MisinfoText,
+            'InfoText': InfoText
+        }
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         if(player.boxChoice == "m"):
             player.participant.seenMisinfo.append(player.participant.randomMisinfoArray[player.round_number-1])
         print('maybe I should draw the text here')
+
+
+# class _sampling(Page):
+#     form_model = 'player'
+#     form_fields = ['boxChoice','statementText', 'statementID','range_ccconcern', 'range_agree', 'range_likelyTrue']
+#     @staticmethod
+#     def vars_for_template(player: Player):
+#         round_number = player.round_number
+#         return {
+#             'round_number': round_number,
+#             'randomInfo': player.participant.randomInfoArray[round_number-1],
+#             'randomMisinfo': player.participant.randomMisinfoArray[round_number-1],
+#             'reverseBoxes': player.participant.reverseBoxes
+#             }
+#     @staticmethod
+#     def before_next_page(player: Player, timeout_happened):
+#         if(player.boxChoice == "m"):
+#             player.participant.seenMisinfo.append(player.participant.randomMisinfoArray[player.round_number-1])
+#         print('maybe I should draw the text here')
 
 
 class boxrating(Page):
